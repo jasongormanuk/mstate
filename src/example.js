@@ -23,10 +23,12 @@ setTimeout(() => {
     console.log('------------ some time passes -----------------');
 
     // edit the stores data object directly
-
     store.data.users[0].age = 23;
     store.data.users[1].age = 64;
     store.data.users[2].age = 87;
+
+    // add items that didn't exist before
+    store.data.completed = true;
 }, 2000);
 
 

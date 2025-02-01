@@ -3,7 +3,7 @@
 
 The goal is to provide a useful state system that covers 90% of applications who's state stays relatively small, 10s - 100s KBs. 
 
-The library currently weighs around `<1kb gzipped`.
+The library currently weighs **less that 1kb gzipped**.
 
 ## Typical usage
 
@@ -16,14 +16,15 @@ const myInitialAppState = {
     }]
 }
 
-// create an mstate instance for your application state
+// Create an mstate instance for your application state.
 const appState = mstate(myInitialAppState);
 
-// pass the appState around, get and set its data 
-// on the appState.data property, just like a normal object
+// Pass the appState around, get and set its data 
+// on the appState.data property, add properties that didn't
+// exist before, just like a normal object.
 const usersName = appState.data.users[0].name;
 
-// subscribe to changes on the appState
+// Subscribe to changes on the appState
 appState.subscribe((newState, oldState) => { ... });
 ```
 
@@ -32,11 +33,11 @@ appState.subscribe((newState, oldState) => { ... });
 ```js
 import mstate from './mstate.js';
 
-// create several mstate instances for your application
+// Create several mstate instances for your application.
 const userData = mstate({});
 const formData = mstate({});
 
-// subscribe to changes on the stores
+// Subscribe to changes on the stores.
 userData.subscribe((newState, oldState) => { ... });
 
 formData.subscribe((newState, oldState) => { ... });
