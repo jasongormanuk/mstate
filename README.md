@@ -1,5 +1,9 @@
-# mstate
-Small reactive state system in JavaScript
+# mstate (mutable state)
+**mstate** is a small reactive state library.
+
+The goal is to provide a useful state system that covers 90% of applications who's state stays relatively small, 10s - 100s KBs. 
+
+The library currently weighs around `<1kb gzipped`.
 
 ## Typical usage
 
@@ -13,17 +17,17 @@ const myInitialAppState = {
 }
 
 // create an mstate instance for your application state
-const store = mstate(myInitialAppState);
+const appState = mstate(myInitialAppState);
 
-// pass the store around, get and set its data 
-// on the store.data property, just like a normal object
-const usersName = store.data.users[0].name;
+// pass the appState around, get and set its data 
+// on the appState.data property, just like a normal object
+const usersName = appState.data.users[0].name;
 
-// subscribe to changes on the store
-store.subscribe((newState, oldState) => { ... });
+// subscribe to changes on the appState
+appState.subscribe((newState, oldState) => { ... });
 ```
 
-## Multiple stores
+## Multiple states
 
 ```js
 import mstate from './mstate.js';
