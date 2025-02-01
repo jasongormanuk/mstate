@@ -24,7 +24,7 @@ const appState = mstate(myInitialAppState);
 // exist before, just like a normal object.
 const usersName = appState.data.users[0].name;
 
-// Subscribe to changes on the appState
+// Subscribe to changes on the appState.
 appState.subscribe((newState, oldState) => { ... });
 ```
 
