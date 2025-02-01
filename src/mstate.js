@@ -2,16 +2,14 @@ const DEBUG_MSG = 'DEBUG mstate   ';
 
 export function mstate(initialState = {}) {
     const proxyCache = new WeakMap();
+    const subscribers = new Set();
+    
     let preBatchedState = null;
     let scheduleId = null;
-    const subscribers = new Set();
   
-    // This is the actual "reactive" proxy creation
     function makeProxy(obj) {
-        // If not an object, return as is
         if (!obj || typeof obj !== 'object') return obj;
   
-        // Return existing proxy if we have one
         if (proxyCache.has(obj)) {
             return proxyCache.get(obj);
         }
@@ -26,9 +24,8 @@ export function mstate(initialState = {}) {
                 const oldVal = target[prop];
                 if (oldVal === newVal) return true;
                 
-                // check for pre-batched state
                 if (!preBatchedState) {
-                    preBatchedState = JSON.parse(JSON.stringify(store.data));
+                    preBatchedState = JSON.parse(JSON.stringify(store.data)); // not proud about this
                 }
                 Reflect.set(target, prop, newVal, receiver);
                 scheduleNotify(store.data, preBatchedState);
@@ -39,12 +36,12 @@ export function mstate(initialState = {}) {
         proxyCache.set(obj, proxy);
         return proxy;
     }
-  
+
     function scheduleNotify(newState, oldState) {
         if (scheduleId !== null) {
             clearTimeout(scheduleId);
         }
-        
+
         scheduleId = setTimeout(() => {
             scheduleId = null;
             for (const sub of subscribers) {
@@ -58,9 +55,9 @@ export function mstate(initialState = {}) {
             }
         }, 0);
     }
-  
+
     const proxyRoot = makeProxy(initialState);
-  
+
     const store = {
         get data() {
             return proxyRoot;
@@ -81,7 +78,7 @@ export function mstate(initialState = {}) {
             }
         }
     };
-  
+
     return store;
 }
 
