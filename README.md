@@ -1,7 +1,7 @@
 # mstate (mutable state)
 **mstate** is a small reactive state library.
 
-The goal is to provide a useful state system that covers 90% of applications who's state stays relatively small, 10s - 100s KBs. 
+The goal is to provide a useful state system that covers 90% of applications who's state stays relatively small, 10-1000kb.
 
 The library currently weighs **less that 1kb gzipped**.
 
