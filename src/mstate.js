@@ -1,38 +1,46 @@
 const DEBUG_MSG = 'DEBUG mstate   ';
+const isDebug =
+  (typeof window !== 'undefined' && window.DEBUG) ||
+  (typeof process !== 'undefined' &&
+    process.env &&
+    process.env.DEBUG);
 
 export function mstate(initialState = {}) {
     const proxyCache = new WeakMap();
     const subscribers = new Set();
-    
+
     let preBatchedState = null;
     let scheduleId = null;
-  
+
     function makeProxy(obj) {
         if (!obj || typeof obj !== 'object') return obj;
-  
+
         if (proxyCache.has(obj)) {
             return proxyCache.get(obj);
         }
-  
+
         const proxy = new Proxy(obj, {
             get(target, prop, receiver) {
                 const value = Reflect.get(target, prop, receiver);
                 return makeProxy(value); // recursively wrap
             },
-            
+
             set(target, prop, newVal, receiver) {
                 const oldVal = target[prop];
                 if (oldVal === newVal) return true;
-                
+
                 if (!preBatchedState) {
                     preBatchedState = JSON.parse(JSON.stringify(store.data)); // not proud about this
                 }
                 Reflect.set(target, prop, newVal, receiver);
+                if (isDebug) {
+                    console.log(DEBUG_MSG, `mstate property updated`);
+                }
                 scheduleNotify(store.data, preBatchedState);
                 return true;
             }
         });
-  
+
         proxyCache.set(obj, proxy);
         return proxy;
     }
@@ -45,10 +53,10 @@ export function mstate(initialState = {}) {
         scheduleId = setTimeout(() => {
             scheduleId = null;
             for (const sub of subscribers) {
-                if (process.env.DEBUG) {
-                    console.debug(DEBUG_MSG, `Calling subscriber`);
-                    console.debug(DEBUG_MSG, `Old State:`, oldState);
-                    console.debug(DEBUG_MSG, `New State:`, newState);
+                if (isDebug) {
+                    console.log(DEBUG_MSG, `Calling subscriber`);
+                    console.log(DEBUG_MSG, `Old State:`, oldState);
+                    console.log(DEBUG_MSG, `New State:`, newState);
                 }
                 sub(newState, oldState);
                 preBatchedState = null;
@@ -65,15 +73,15 @@ export function mstate(initialState = {}) {
         subscribe(fn) {
             subscribers.add(fn);
             
-            if (process.env.DEBUG) {
-                console.debug(DEBUG_MSG, 'Add subscriber');
+            if (isDebug) {
+                console.log(DEBUG_MSG, 'Add subscriber');
             }
-            
+
             return () => {
                 subscribers.delete(fn);
 
-                if (process.env.DEBUG) {
-                    console.debug(DEBUG_MSG, 'Remove subscriber');
+                if (isDebug) {
+                    console.log(DEBUG_MSG, 'Remove subscriber');
                 }
             }
         }

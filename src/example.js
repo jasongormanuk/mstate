@@ -1,35 +1,38 @@
 import mstate from './mstate.js';
 
-const appState = {
-    users: [{
-        name: 'John'
-    }]
+const initialAppState = window.localStorage.getItem('appState') ? JSON.parse(window.localStorage.getItem('appState')) : {
+    users: {
+        '123': {
+            name: 'John'
+        }
+    }
 }
 
-const store = mstate(appState);
+const store = mstate(initialAppState);
 
-store.subscribe((newState, oldState) => { 
-    console.log('subscriber1 does something with changes');
-});
-
+// Subscribe to update the UI with the new data.
 store.subscribe((newState, oldState) => {
-    console.log('subscriber2 does something else')
+    document.querySelector('pre').innerText = JSON.stringify(newState);
 });
 
-store.data.users.push({ name: 'Doe' });
-store.data.users.push({ name: 'Someone else' });
+// Subscribe to store the app state in localStorage.
+store.subscribe((newState, oldState) => {
+    window.localStorage.setItem('appState', JSON.stringify(newState));
+    console.log('Saved state to localStorage');
+});
 
-setTimeout(() => {
-    console.log('------------ some time passes -----------------');
+console.log('Restored state:', JSON.stringify(store.data));
 
-    // edit the stores data object directly
-    store.data.users[0].age = 23;
-    store.data.users[1].age = 64;
-    store.data.users[2].age = 87;
+document.querySelector('pre').innerHTML = JSON.stringify(store.data);
 
-    // add items that didn't exist before
-    store.data.completed = true;
-}, 2000);
+const btn = document.createElement('button');
 
+btn.textContent = 'Update State';
 
+btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    store.data.users['123'].age = store.data.users['123'].age ? (store.data.users['123'].age + 1) : 1;
+    return false;
+});
 
+document.body.appendChild(btn);
