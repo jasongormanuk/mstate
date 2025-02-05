@@ -3,6 +3,8 @@
 
 The goal is to provide a useful state system that covers 90% of applications who's state stays relatively small, 10-1000kb.
 
+The interface of an mstate object is similar to any normal JS object, pass it around, change values, add nested structures. All of the values within the object become "reactive" and by subscribing to the overall mstate object you can be notified when values change.
+
 The library currently weighs **less that 1kb gzipped**.
 
 ## Typical usage
